@@ -1,0 +1,1182 @@
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: var(--font-sans, "Segoe UI", sans-serif);
+    background: var(--color-background-tertiary, #f5f4f0);
+    color: var(--color-text-primary, #1a1a1a);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+  }
+  .upload-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .ubox {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #fff;
+  }
+  .ubox:hover {
+    border-color: #888;
+  }
+  .ubox input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .ubox img {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  .ubox .lbl {
+    font-size: 11px;
+    color: #666;
+  }
+  .ubox .fname {
+    font-size: 10px;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  /* 탭 */
+  .tabs {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 700px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f0f0f0;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+    border: none;
+    background: transparent;
+  }
+  .tab.active {
+    background: #fff;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+
+  /* 정렬 패널 */
+  .align-panel {
+    width: 100%;
+    max-width: 700px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .align-panel.visible {
+    display: flex;
+  }
+  .align-cv-wrap {
+    position: relative;
+    width: 100%;
+    background: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+  }
+  .align-cv-wrap canvas {
+    display: block;
+    max-width: 100%;
+  }
+  .align-hint {
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+  }
+  .img-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    background: #f8f8f8;
+    border-radius: 8px;
+  }
+  .img-controls .title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 2px;
+  }
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctrl-row label {
+    font-size: 11px;
+    color: #666;
+    min-width: 40px;
+  }
+  .ctrl-row input[type="range"] {
+    flex: 1;
+    accent-color: #e08030;
+  }
+  .ctrl-row .v {
+    font-size: 11px;
+    color: #333;
+    min-width: 32px;
+    text-align: right;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* 디졸브 패널 */
+  .dissolve-panel {
+    width: 100%;
+    max-width: 700px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dissolve-panel.visible {
+    display: flex;
+  }
+  .cv-wrap {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #111;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+    display: block;
+    max-width: 100%;
+    cursor: crosshair;
+  }
+  .empty {
+    color: #888;
+    font-size: 13px;
+    padding: 30px;
+    text-align: center;
+  }
+  .controls {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row label {
+    font-size: 12px;
+    color: #555;
+    min-width: 64px;
+  }
+  .row input[type="range"] {
+    flex: 1;
+    accent-color: #e08030;
+  }
+  .val {
+    font-size: 12px;
+    color: #222;
+    min-width: 34px;
+    text-align: right;
+  }
+  .btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 12px;
+    background: #f0f0f0;
+    color: #222;
+  }
+  button:hover {
+    background: #e4e4e4;
+  }
+  button.primary {
+    background: #1a6fd4;
+    color: #fff;
+    border-color: transparent;
+  }
+  button.rec {
+    background: #c0392b;
+    color: #fff;
+    border-color: transparent;
+  }
+  button.ok {
+    background: #2e7d32;
+    color: #fff;
+    border-color: transparent;
+  }
+  button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #d4edda;
+    color: #155724;
+  }
+  .status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #fff3cd;
+    color: #856404;
+    display: none;
+  }
+  .pbar-wrap {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    display: none;
+  }
+  .pbar {
+    height: 4px;
+    background: #e08030;
+    border-radius: 2px;
+    width: 0%;
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 999;
+    padding: 16px;
+    cursor: pointer;
+  }
+  .overlay-msg {
+    color: #fff;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-align: center;
+    line-height: 1.7;
+  }
+  .overlay img {
+    max-width: 100%;
+    max-height: 75vh;
+    border-radius: 8px;
+    cursor: default;
+  }
+  .overlay-close {
+    color: #aaa;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .hint-bar {
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e08030;
+    flex-shrink: 0;
+  }
+</style>
+
+<div class="upload-row">
+  <div class="ubox" id="box1">
+    <input type="file" accept="image/*" id="f1" />
+    <div style="font-size: 18px; color: #bbb">+</div>
+    <div class="lbl">이미지 1</div>
+  </div>
+  <div class="ubox" id="box2">
+    <input type="file" accept="image/*" id="f2" />
+    <div style="font-size: 18px; color: #bbb">+</div>
+    <div class="lbl">이미지 2</div>
+  </div>
+</div>
+
+<div class="tabs" id="tabs" style="display: none">
+  <button class="tab active" id="tabAlign" onclick="switchTab('align')">
+    ① 얼굴 정렬
+  </button>
+  <button class="tab" id="tabDissolve" onclick="switchTab('dissolve')">
+    ② 디졸브
+  </button>
+</div>
+
+<!-- ① 정렬 패널 -->
+<div class="align-panel visible" id="alignPanel">
+  <div class="align-hint">
+    두 사진을 올린 뒤 얼굴 크기·위치를 맞춰주세요 (반투명 오버레이로 확인)
+  </div>
+  <div class="align-cv-wrap"><canvas id="acv"></canvas></div>
+  <div class="two-col">
+    <div class="img-controls">
+      <div class="title">이미지 1 조정</div>
+      <div class="ctrl-row">
+        <label>크기</label
+        ><input
+          type="range"
+          id="s1"
+          min="30"
+          max="200"
+          step="1"
+          value="100"
+        /><span class="v" id="s1v">100%</span>
+      </div>
+      <div class="ctrl-row">
+        <label>좌우</label
+        ><input
+          type="range"
+          id="x1"
+          min="-100"
+          max="100"
+          step="1"
+          value="0"
+        /><span class="v" id="x1v">0</span>
+      </div>
+      <div class="ctrl-row">
+        <label>상하</label
+        ><input
+          type="range"
+          id="y1"
+          min="-100"
+          max="100"
+          step="1"
+          value="0"
+        /><span class="v" id="y1v">0</span>
+      </div>
+    </div>
+    <div class="img-controls">
+      <div class="title">이미지 2 조정</div>
+      <div class="ctrl-row">
+        <label>크기</label
+        ><input
+          type="range"
+          id="s2"
+          min="30"
+          max="200"
+          step="1"
+          value="100"
+        /><span class="v" id="s2v">100%</span>
+      </div>
+      <div class="ctrl-row">
+        <label>좌우</label
+        ><input
+          type="range"
+          id="x2"
+          min="-100"
+          max="100"
+          step="1"
+          value="0"
+        /><span class="v" id="x2v">0</span>
+      </div>
+      <div class="ctrl-row">
+        <label>상하</label
+        ><input
+          type="range"
+          id="y2"
+          min="-100"
+          max="100"
+          step="1"
+          value="0"
+        /><span class="v" id="y2v">0</span>
+      </div>
+    </div>
+  </div>
+  <div class="btns">
+    <button class="ok" id="bApply" disabled onclick="applyAlign()">
+      정렬 완료 → 디졸브로 이동
+    </button>
+  </div>
+</div>
+
+<!-- ② 디졸브 패널 -->
+<div class="dissolve-panel" id="dissolvePanel">
+  <div class="hint-bar" id="hint">
+    <div class="dot"></div>
+    얼굴 위치를 클릭해 중심점을 설정하세요
+  </div>
+  <div class="cv-wrap">
+    <div class="empty" id="empty">정렬 완료 후 여기에 표시됩니다</div>
+    <canvas id="cv" style="display: none"></canvas>
+  </div>
+  <div class="controls">
+    <div class="row">
+      <label>진행</label
+      ><input
+        type="range"
+        id="prog"
+        min="0"
+        max="100"
+        step="1"
+        value="0"
+      /><span class="val" id="progV">0%</span>
+    </div>
+    <div class="row">
+      <label>속도</label
+      ><input type="range" id="spd" min="1" max="10" step="1" value="4" /><span
+        class="val"
+        id="spdV"
+        >4</span
+      >
+    </div>
+    <div class="row">
+      <label>시작 대기</label
+      ><input
+        type="range"
+        id="holdS"
+        min="0"
+        max="5"
+        step="0.5"
+        value="1"
+      /><span class="val" id="holdSV">1초</span>
+    </div>
+    <div class="row">
+      <label>종료 대기</label
+      ><input
+        type="range"
+        id="holdE"
+        min="0"
+        max="5"
+        step="0.5"
+        value="2"
+      /><span class="val" id="holdEV">2초</span>
+    </div>
+    <div class="row">
+      <label>얼굴 크기</label
+      ><input
+        type="range"
+        id="fsize"
+        min="10"
+        max="55"
+        step="1"
+        value="28"
+      /><span class="val" id="fsizeV">28%</span>
+    </div>
+    <div class="row">
+      <label>경계</label
+      ><input
+        type="range"
+        id="soft"
+        min="10"
+        max="70"
+        step="1"
+        value="40"
+      /><span class="val" id="softV">40%</span>
+    </div>
+    <div class="row" style="gap: 8px">
+      <input
+        type="checkbox"
+        id="chkRev"
+        style="width: auto; accent-color: #e08030"
+      /><label
+        for="chkRev"
+        style="min-width: auto; cursor: pointer; font-size: 12px; color: #555"
+        >역방향 포함</label
+      >
+    </div>
+    <div class="pbar-wrap" id="pbarWrap">
+      <div class="pbar" id="pbar"></div>
+    </div>
+    <div class="btns">
+      <button class="primary" id="bPlay">재생</button>
+      <button id="bReset">처음으로</button>
+      <button class="rec" id="bRec">● GIF 저장</button>
+      <span class="badge" id="cpBadge" style="display: none"
+        >중심점 설정됨</span
+      >
+      <span class="status" id="statusBadge"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── 공통 상태 ──
+  let img1 = null,
+    img2 = null;
+  let aligned1 = null,
+    aligned2 = null; // 정렬 완료된 오프스크린 캔버스
+
+  // ── 정렬 캔버스 ──
+  const acv = document.getElementById("acv"),
+    actx = acv.getContext("2d");
+  const ALIGN_W = 460,
+    ALIGN_H = 360;
+  acv.width = ALIGN_W;
+  acv.height = ALIGN_H;
+
+  const s1 = document.getElementById("s1"),
+    x1 = document.getElementById("x1"),
+    y1 = document.getElementById("y1");
+  const s2 = document.getElementById("s2"),
+    x2 = document.getElementById("x2"),
+    y2 = document.getElementById("y2");
+  [
+    ["s1", s1, "s1v", "%"],
+    ["x1", x1, "x1v", ""],
+    ["y1", y1, "y1v", ""],
+    ["s2", s2, "s2v", "%"],
+    ["x2", x2, "x2v", ""],
+    ["y2", y2, "y2v", ""],
+  ].forEach(([id, el, vid, sfx]) => {
+    el.oninput = () => {
+      document.getElementById(vid).textContent = el.value + sfx;
+      drawAlign();
+    };
+  });
+
+  function getTransform(sEl, xEl, yEl) {
+    return {
+      scale: parseFloat(sEl.value) / 100,
+      dx: parseFloat(xEl.value),
+      dy: parseFloat(yEl.value),
+    };
+  }
+
+  function drawAlign() {
+    if (!img1 && !img2) return;
+    actx.clearRect(0, 0, ALIGN_W, ALIGN_H);
+    actx.fillStyle = "#222";
+    actx.fillRect(0, 0, ALIGN_W, ALIGN_H);
+    function drawImg(img, t, alpha) {
+      if (!img) return;
+      const sc = t.scale;
+      const w = img.naturalWidth,
+        h = img.naturalHeight;
+      const fit = Math.min(ALIGN_W / w, ALIGN_H / h);
+      const dw = w * fit * sc,
+        dh = h * fit * sc;
+      const dx = (ALIGN_W - dw) / 2 + t.dx,
+        dy = (ALIGN_H - dh) / 2 + t.dy;
+      actx.globalAlpha = alpha;
+      actx.drawImage(img, dx, dy, dw, dh);
+      actx.globalAlpha = 1;
+    }
+    drawImg(img1, getTransform(s1, x1, y1), img2 ? 0.55 : 1);
+    drawImg(img2, getTransform(s2, x2, y2), img1 ? 0.55 : 1);
+    // 가이드 십자선
+    actx.strokeStyle = "rgba(240,160,48,0.4)";
+    actx.lineWidth = 1;
+    actx.setLineDash([4, 4]);
+    actx.beginPath();
+    actx.moveTo(ALIGN_W / 2, 0);
+    actx.lineTo(ALIGN_W / 2, ALIGN_H);
+    actx.stroke();
+    actx.beginPath();
+    actx.moveTo(0, ALIGN_H / 2);
+    actx.lineTo(ALIGN_W, ALIGN_H / 2);
+    actx.stroke();
+    actx.setLineDash([]);
+  }
+
+  function renderAligned(img, t) {
+    const oc = document.createElement("canvas");
+    oc.width = ALIGN_W;
+    oc.height = ALIGN_H;
+    const c = oc.getContext("2d");
+    c.fillStyle = "#000";
+    c.fillRect(0, 0, ALIGN_W, ALIGN_H);
+    const sc = t.scale;
+    const w = img.naturalWidth,
+      h = img.naturalHeight;
+    const fit = Math.min(ALIGN_W / w, ALIGN_H / h);
+    const dw = w * fit * sc,
+      dh = h * fit * sc;
+    const dx = (ALIGN_W - dw) / 2 + t.dx,
+      dy = (ALIGN_H - dh) / 2 + t.dy;
+    c.drawImage(img, dx, dy, dw, dh);
+    return oc;
+  }
+
+  function applyAlign() {
+    aligned1 = renderAligned(img1, getTransform(s1, x1, y1));
+    aligned2 = renderAligned(img2, getTransform(s2, x2, y2));
+    switchTab("dissolve");
+    initDissolve();
+  }
+
+  // ── 탭 전환 ──
+  function switchTab(t) {
+    document
+      .getElementById("alignPanel")
+      .classList.toggle("visible", t === "align");
+    document
+      .getElementById("dissolvePanel")
+      .classList.toggle("visible", t === "dissolve");
+    document
+      .getElementById("tabAlign")
+      .classList.toggle("active", t === "align");
+    document
+      .getElementById("tabDissolve")
+      .classList.toggle("active", t === "dissolve");
+  }
+
+  // ── 이미지 로드 ──
+  function loadImg(f) {
+    return new Promise((res) => {
+      const r = new FileReader();
+      r.onload = (e) => {
+        const i = new Image();
+        i.onload = () => res(i);
+        i.src = e.target.result;
+      };
+      r.readAsDataURL(f);
+    });
+  }
+  function setThumb(id, img, name) {
+    const b = document.getElementById(id);
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = "image/*";
+    inp.onchange = id === "box1" ? onF1 : onF2;
+    b.innerHTML = "";
+    b.appendChild(inp);
+    const t = document.createElement("img");
+    t.src = img.src;
+    b.appendChild(t);
+    const n = document.createElement("div");
+    n.className = "fname";
+    n.textContent = name;
+    b.appendChild(n);
+  }
+  async function onF1(e) {
+    if (!e.target.files[0]) return;
+    img1 = await loadImg(e.target.files[0]);
+    setThumb("box1", img1, e.target.files[0].name);
+    onBothLoaded();
+  }
+  async function onF2(e) {
+    if (!e.target.files[0]) return;
+    img2 = await loadImg(e.target.files[0]);
+    setThumb("box2", img2, e.target.files[0].name);
+    onBothLoaded();
+  }
+  document.getElementById("f1").onchange = onF1;
+  document.getElementById("f2").onchange = onF2;
+  function onBothLoaded() {
+    drawAlign();
+    if (img1 && img2) {
+      document.getElementById("tabs").style.display = "flex";
+      document.getElementById("bApply").disabled = false;
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // ── 디졸브 ──
+  // ══════════════════════════════════════════
+  const cv = document.getElementById("cv"),
+    ctx = cv.getContext("2d");
+  let alpha = 0,
+    playing = false,
+    rafId = null;
+  let cx_ = 0.5,
+    cy_ = 0.4;
+  let off = document.createElement("canvas"),
+    octx = off.getContext("2d");
+  let audioCtx = null,
+    musicGain = null,
+    laughDone = false;
+  let gifFrames = [],
+    capturingGif = false,
+    lastCapTime = 0;
+  const GIF_FPS = 10,
+    GIF_INTERVAL = 1000 / GIF_FPS;
+  const gifCv = document.createElement("canvas"),
+    gifCtx = gifCv.getContext("2d");
+  const GIF_W = 360;
+
+  const prog = document.getElementById("prog"),
+    progV = document.getElementById("progV");
+  const spd = document.getElementById("spd"),
+    spdV = document.getElementById("spdV");
+  const holdS = document.getElementById("holdS"),
+    holdSV = document.getElementById("holdSV");
+  const holdE = document.getElementById("holdE"),
+    holdEV = document.getElementById("holdEV");
+  const soft = document.getElementById("soft"),
+    softV = document.getElementById("softV");
+  const fsize = document.getElementById("fsize"),
+    fsizeV = document.getElementById("fsizeV");
+  const chkRev = document.getElementById("chkRev");
+  const bPlay = document.getElementById("bPlay"),
+    bReset = document.getElementById("bReset"),
+    bRec = document.getElementById("bRec");
+  const cpBadge = document.getElementById("cpBadge"),
+    statusBadge = document.getElementById("statusBadge");
+  const pbarWrap = document.getElementById("pbarWrap"),
+    pbar = document.getElementById("pbar");
+
+  spd.oninput = () => (spdV.textContent = spd.value);
+  holdS.oninput = () => (holdSV.textContent = holdS.value + "초");
+  holdE.oninput = () => (holdEV.textContent = holdE.value + "초");
+  soft.oninput = () => {
+    softV.textContent = soft.value + "%";
+    drawD();
+  };
+  fsize.oninput = () => {
+    fsizeV.textContent = fsize.value + "%";
+    drawD();
+  };
+  prog.oninput = () => {
+    if (playing) stopPlay();
+    alpha = prog.value / 100;
+    progV.textContent = prog.value + "%";
+    drawD();
+  };
+
+  function initDissolve() {
+    cv.width = ALIGN_W;
+    cv.height = ALIGN_H;
+    const gs = GIF_W / cv.width;
+    gifCv.width = GIF_W;
+    gifCv.height = Math.round(cv.height * gs);
+    cv.style.display = "block";
+    document.getElementById("empty").style.display = "none";
+    alpha = 0;
+    laughDone = false;
+    prog.value = 0;
+    progV.textContent = "0%";
+    drawD();
+  }
+
+  function drawD() {
+    if (!aligned1 || !aligned2) return;
+    if (off.width !== cv.width || off.height !== cv.height) {
+      off.width = cv.width;
+      off.height = cv.height;
+    }
+    ctx.globalAlpha = 1;
+    ctx.drawImage(aligned1, 0, 0, cv.width, cv.height);
+    if (alpha > 0) {
+      const px = cx_ * cv.width,
+        py = cy_ * cv.height;
+      const fw = (fsize.value / 100) * cv.width,
+        fh = fw * 1.32,
+        sf = soft.value / 100;
+      octx.clearRect(0, 0, off.width, off.height);
+      octx.globalAlpha = 1;
+      octx.drawImage(aligned2, 0, 0, off.width, off.height);
+      octx.globalCompositeOperation = "destination-in";
+      octx.save();
+      octx.translate(px, py);
+      octx.scale(1, fh / fw);
+      const g = octx.createRadialGradient(0, 0, fw * (1 - sf), 0, 0, fw);
+      g.addColorStop(0, "rgba(0,0,0,1)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      octx.fillStyle = g;
+      octx.fillRect(-fw * 2, -fw * 2, fw * 4, fw * 4);
+      octx.restore();
+      octx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(off, 0, 0);
+      ctx.globalAlpha = 1;
+    }
+    if (alpha < 0.06) drawCross();
+  }
+  function drawCross() {
+    const px = cx_ * cv.width,
+      py = cy_ * cv.height;
+    ctx.save();
+    ctx.strokeStyle = "rgba(240,160,48,0.75)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.arc(px, py, 12, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(px - 18, py);
+    ctx.lineTo(px + 18, py);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(px, py - 18);
+    ctx.lineTo(px, py + 18);
+    ctx.stroke();
+    ctx.restore();
+  }
+  cv.addEventListener("click", (e) => {
+    const r = cv.getBoundingClientRect();
+    cx_ = (e.clientX - r.left) / r.width;
+    cy_ = (e.clientY - r.top) / r.height;
+    cpBadge.style.display = "inline";
+    drawD();
+  });
+
+  function getAC() {
+    if (!audioCtx)
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+  function playNote(ac, dest, type, freq, t, dur, vol) {
+    const o = ac.createOscillator(),
+      g = ac.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.03);
+    g.gain.setValueAtTime(vol, t + dur * 0.65);
+    g.gain.linearRampToValueAtTime(0, t + dur);
+    o.connect(g);
+    g.connect(dest);
+    o.start(t);
+    o.stop(t + dur + 0.01);
+  }
+  function startMusic() {
+    const ac = getAC();
+    musicGain = ac.createGain();
+    musicGain.gain.value = 0.18;
+    musicGain.connect(ac.destination);
+    const delay = ac.createDelay(0.5);
+    delay.delayTime.value = 0.3;
+    const dg = ac.createGain();
+    dg.gain.value = 0.15;
+    delay.connect(dg);
+    dg.connect(delay);
+    dg.connect(musicGain);
+    const d2 = ac.createGain();
+    d2.gain.value = 1;
+    d2.connect(musicGain);
+    d2.connect(delay);
+    const mel = [
+      261.63, 329.63, 392, 440, 523.25, 440, 392, 329.63, 261.63, 329.63, 392,
+      523.25, 659.25, 523.25, 392, 329.63,
+    ];
+    const bass = [130.81, 130.81, 196, 196, 164.81, 164.81, 174.61, 196];
+    const b = 60 / 108,
+      t0 = ac.currentTime + 0.05;
+    for (let loop = 0; loop < 30; loop++) {
+      const lt = t0 + loop * mel.length * b;
+      mel.forEach((f, i) =>
+        playNote(ac, d2, "triangle", f, lt + i * b, b * 0.75, 0.22),
+      );
+      bass.forEach((f, i) =>
+        playNote(ac, d2, "sine", f, lt + i * b * 2, b * 1.8, 0.18),
+      );
+    }
+  }
+  function stopMusic() {
+    if (musicGain) {
+      musicGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+      musicGain = null;
+    }
+  }
+  function playLaugh() {
+    const ac = getAC();
+    const mg = ac.createGain();
+    mg.gain.value = 0.6;
+    mg.connect(ac.destination);
+    for (let i = 0; i < 7; i++) {
+      const t = ac.currentTime + 0.05 + i * 0.19,
+        f = 480 + i * 25;
+      const o = ac.createOscillator(),
+        g = ac.createGain();
+      o.type = "sawtooth";
+      o.frequency.setValueAtTime(f, t);
+      o.frequency.linearRampToValueAtTime(f * 0.82, t + 0.14);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.35, t + 0.025);
+      g.gain.setValueAtTime(0.35, t + 0.09);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+      o.connect(g);
+      g.connect(mg);
+      o.start(t);
+      o.stop(t + 0.17);
+      for (let d = -1; d <= 1; d++) {
+        const o2 = ac.createOscillator(),
+          g2 = ac.createGain();
+        o2.type = "triangle";
+        o2.frequency.value = f * (1 + d * 0.015);
+        g2.gain.setValueAtTime(0, t);
+        g2.gain.linearRampToValueAtTime(0.1, t + 0.02);
+        g2.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+        o2.connect(g2);
+        g2.connect(mg);
+        o2.start(t);
+        o2.stop(t + 0.16);
+      }
+    }
+    const tl = ac.currentTime + 0.05 + 7 * 0.19;
+    const ol = ac.createOscillator(),
+      gl = ac.createGain();
+    ol.type = "sawtooth";
+    ol.frequency.setValueAtTime(600, tl);
+    ol.frequency.exponentialRampToValueAtTime(350, tl + 0.5);
+    gl.gain.setValueAtTime(0, tl);
+    gl.gain.linearRampToValueAtTime(0.28, tl + 0.04);
+    gl.gain.exponentialRampToValueAtTime(0.001, tl + 0.55);
+    ol.connect(gl);
+    gl.connect(mg);
+    ol.start(tl);
+    ol.stop(tl + 0.6);
+  }
+
+  function capFrame(ts) {
+    if (capturingGif && ts - lastCapTime >= GIF_INTERVAL) {
+      gifCtx.drawImage(cv, 0, 0, gifCv.width, gifCv.height);
+      gifFrames.push(gifCtx.getImageData(0, 0, gifCv.width, gifCv.height));
+      lastCapTime = ts;
+    }
+  }
+  function stopPlay() {
+    playing = false;
+    bPlay.textContent = "재생";
+    cancelAnimationFrame(rafId);
+  }
+
+  function runAnimation(onComplete) {
+    if (alpha >= 1) {
+      alpha = 0;
+      laughDone = false;
+    }
+    playing = true;
+    bPlay.textContent = "일시정지";
+    startMusic();
+    const v = () => spd.value * 0.07;
+    const hs = parseFloat(holdS.value),
+      he = parseFloat(holdE.value),
+      doRev = chkRev.checked;
+    let phase = "hs",
+      remain = hs,
+      last = null;
+    function step(ts) {
+      if (!playing) return;
+      if (last === null) last = ts;
+      const dt = (ts - last) / 1000;
+      last = ts;
+      capFrame(ts);
+      if (phase === "hs") {
+        remain -= dt;
+        if (remain <= 0) phase = "fwd";
+        rafId = requestAnimationFrame(step);
+        return;
+      }
+      if (phase === "fwd") {
+        alpha += v() * dt;
+        if (alpha >= 1) {
+          alpha = 1;
+          drawD();
+          capFrame(ts + 1);
+          stopMusic();
+          if (!laughDone) {
+            laughDone = true;
+            playLaugh();
+          }
+          phase = "he";
+          remain = he;
+          rafId = requestAnimationFrame(step);
+          return;
+        }
+        prog.value = Math.round(alpha * 100);
+        progV.textContent = Math.round(alpha * 100) + "%";
+        drawD();
+        rafId = requestAnimationFrame(step);
+        return;
+      }
+      if (phase === "he") {
+        remain -= dt;
+        if (remain <= 0) {
+          if (doRev) phase = "rev";
+          else {
+            playing = false;
+            bPlay.textContent = "재생";
+            if (onComplete) onComplete();
+            return;
+          }
+        }
+        rafId = requestAnimationFrame(step);
+        return;
+      }
+      if (phase === "rev") {
+        alpha -= v() * dt;
+        if (alpha <= 0) {
+          alpha = 0;
+          prog.value = 0;
+          progV.textContent = "0%";
+          drawD();
+          capFrame(ts + 1);
+          playing = false;
+          bPlay.textContent = "재생";
+          if (onComplete) onComplete();
+          return;
+        }
+        prog.value = Math.round(alpha * 100);
+        progV.textContent = Math.round(alpha * 100) + "%";
+        drawD();
+        rafId = requestAnimationFrame(step);
+        return;
+      }
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  bPlay.onclick = () => {
+    if (playing) stopPlay();
+    else runAnimation(null);
+  };
+  bReset.onclick = () => {
+    stopPlay();
+    stopMusic();
+    alpha = 0;
+    laughDone = false;
+    capturingGif = false;
+    gifFrames = [];
+    prog.value = 0;
+    progV.textContent = "0%";
+    pbarWrap.style.display = "none";
+    statusBadge.style.display = "none";
+    drawD();
+  };
+  bRec.onclick = async () => {
+    if (!aligned1 || !aligned2) return;
+    stopPlay();
+    stopMusic();
+    alpha = 0;
+    laughDone = false;
+    gifFrames = [];
+    prog.value = 0;
+    progV.textContent = "0%";
+    drawD();
+    let workerURL;
+    try {
+      const res = await fetch(
+        "https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js",
+      );
+      workerURL = URL.createObjectURL(
+        new Blob([await res.text()], { type: "text/javascript" }),
+      );
+    } catch (e) {
+      statusBadge.textContent = "⚠ 로드 실패";
+      statusBadge.style.display = "inline";
+      return;
+    }
+    capturingGif = true;
+    lastCapTime = 0;
+    bRec.disabled = true;
+    bPlay.disabled = true;
+    bReset.disabled = true;
+    statusBadge.textContent = "● 캡처 중...";
+    statusBadge.style.display = "inline";
+    runAnimation(() => {
+      capturingGif = false;
+      statusBadge.textContent = "⚙ 인코딩 중...";
+      pbarWrap.style.display = "block";
+      pbar.style.width = "0%";
+      const gif = new GIF({
+        workers: 2,
+        quality: 12,
+        width: gifCv.width,
+        height: gifCv.height,
+        workerScript: workerURL,
+      });
+      gifFrames.forEach((f) =>
+        gif.addFrame(f, { copy: true, delay: Math.round(GIF_INTERVAL) }),
+      );
+      gif.on("progress", (p) => {
+        pbar.style.width = Math.round(p * 100) + "%";
+      });
+      gif.on("finished", (blob) => {
+        URL.revokeObjectURL(workerURL);
+        pbarWrap.style.display = "none";
+        statusBadge.style.display = "none";
+        bRec.disabled = false;
+        bPlay.disabled = false;
+        bReset.disabled = false;
+        showOverlay(URL.createObjectURL(blob));
+      });
+      gif.render();
+    });
+  };
+  function showOverlay(url) {
+    const ov = document.createElement("div");
+    ov.className = "overlay";
+    const msg = document.createElement("div");
+    msg.className = "overlay-msg";
+    msg.innerHTML =
+      "GIF 완성! 🎉<br>우클릭 → 이미지 저장 (PC) | 꾹 누르기 (모바일)";
+    const img = document.createElement("img");
+    img.src = url;
+    const cl = document.createElement("div");
+    cl.className = "overlay-close";
+    cl.textContent = "✕  닫기";
+    ov.appendChild(msg);
+    ov.appendChild(img);
+    ov.appendChild(cl);
+    document.body.appendChild(ov);
+    img.onclick = (e) => e.stopPropagation();
+    cl.onclick = (e) => {
+      e.stopPropagation();
+      ov.remove();
+      URL.revokeObjectURL(url);
+    };
+    ov.onclick = () => {
+      ov.remove();
+      URL.revokeObjectURL(url);
+    };
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
